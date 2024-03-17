@@ -4,3 +4,9 @@
 *.ptx
 *.cubin
 *.fatbin
+
+env/
+dataset/
+hc_profiling/
+
+no_organize/
