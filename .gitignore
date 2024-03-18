@@ -5,6 +5,8 @@
 *.cubin
 *.fatbin
 
+.vscode/
+
 env/
 dataset/
 hc_profiling/
