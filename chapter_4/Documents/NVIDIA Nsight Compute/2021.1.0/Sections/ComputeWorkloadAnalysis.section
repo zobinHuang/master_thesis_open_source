@@ -1,0 +1,127 @@
+Identifier: "ComputeWorkloadAnalysis"
+DisplayName: "Compute Workload Analysis"
+Description: "Detailed analysis of the compute resources of the streaming multiprocessors (SM), including the achieved instructions per clock (IPC) and the utilization of each available pipeline. Pipelines with very high utilization might limit the overall performance."
+Order: 20
+Sets {
+  Identifier: "detailed"
+}
+Sets {
+  Identifier: "full"
+}
+Header {
+  Metrics {
+    Label: "Executed Ipc Elapsed"
+    Name: "sm__inst_executed.avg.per_cycle_elapsed"
+  }
+  Metrics {
+    Label: "SM Busy"
+    Name: "sm__instruction_throughput.avg.pct_of_peak_sustained_active"
+  }
+  Metrics {
+    Label: "Executed Ipc Active"
+    Name: "sm__inst_executed.avg.per_cycle_active"
+  }
+  Metrics {
+    Label: "Issue Slots Busy"
+    Name: "sm__inst_issued.avg.pct_of_peak_sustained_active"
+  }
+  Metrics {
+    Label: "Issued Ipc Active"
+    Name: "sm__inst_issued.avg.per_cycle_active"
+  }
+  Metrics {
+    Name: ""
+  }
+}
+Metrics {
+  Metrics {
+    Name: "sm__inst_issued.max.pct_of_peak_sustained_active"
+  }
+}
+Body {
+  Items {
+    BarChart {
+      Label: "Pipe Utilization"
+      SortKey: ByValue
+      SortDirection: Descending
+      ValueAxis {
+        Label: "Utilization [%]"
+        Range {
+          Max: 100
+        }
+      }
+      Metrics {
+        Label: "ADU"
+        Name: "sm__inst_executed_pipe_adu.avg.pct_of_peak_sustained_active"
+      }
+      Metrics {
+        Label: "ALU"
+        Name: "sm__pipe_alu_cycles_active.avg.pct_of_peak_sustained_active"
+      }
+      Metrics {
+        Label: "CBU"
+        Name: "sm__inst_executed_pipe_cbu.avg.pct_of_peak_sustained_active"
+      }
+      Metrics {
+        Label: "FMA"
+        Name: "sm__pipe_fma_cycles_active.avg.pct_of_peak_sustained_active"
+      }
+      Metrics {
+        Label: "FP16"
+        Name: "sm__inst_executed_pipe_fp16.avg.pct_of_peak_sustained_active"
+        Filter {
+          MaxArch: CC_80
+        }
+        Options {
+          Label: "FMA (FP16)"
+          Name: "sm__inst_executed_pipe_fma_type_fp16.avg.pct_of_peak_sustained_active"
+          Filter {
+            MinArch: CC_86
+          }
+        }
+      }
+      Metrics {
+        Label: "FP64"
+        Name: "sm__inst_executed_pipe_fp64.avg.pct_of_peak_sustained_active"
+      }
+      Metrics {
+        Label: "LSU"
+        Name: "sm__inst_executed_pipe_lsu.avg.pct_of_peak_sustained_active"
+      }
+      Metrics {
+        Label: "Tensor (DP)"
+        Name: "sm__inst_executed_pipe_tensor_op_dmma.avg.pct_of_peak_sustained_active"
+        Filter {
+          MinArch: CC_80
+          MaxArch: CC_80
+        }
+      }
+      Metrics {
+        Label: "Tensor (FP)"
+        Name: "sm__inst_executed_pipe_tensor_op_hmma.avg.pct_of_peak_sustained_active"
+      }
+      Metrics {
+        Label: "Tensor (INT)"
+        Name: "sm__inst_executed_pipe_tensor_op_imma.avg.pct_of_peak_sustained_active"
+        Filter {
+          MinArch: CC_72
+        }
+      }
+      Metrics {
+        Label: "TEX"
+        Name: "sm__inst_executed_pipe_tex.avg.pct_of_peak_sustained_active"
+      }
+      Metrics {
+        Label: "Uniform"
+        Name: "sm__inst_executed_pipe_uniform.avg.pct_of_peak_sustained_active"
+        Filter {
+          MinArch: CC_75
+        }
+      }
+      Metrics {
+        Label: "XU"
+        Name: "sm__inst_executed_pipe_xu.avg.pct_of_peak_sustained_active"
+      }
+    }
+  }
+}

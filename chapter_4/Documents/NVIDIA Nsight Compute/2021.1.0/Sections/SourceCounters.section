@@ -1,0 +1,297 @@
+Identifier: "SourceCounters"
+DisplayName: "Source Counters"
+Description: "Source metrics, including branch efficiency and sampled warp stall reasons. Sampling Data metrics are periodically sampled over the kernel runtime. They indicate when warps were stalled and couldn't be scheduled. See the documentation for a description of all stall reasons. Only focus on stalls if the schedulers fail to issue every cycle."
+Order: 100
+Sets {
+  Identifier: "detailed"
+}
+Sets {
+  Identifier: "full"
+}
+Sets {
+  Identifier: "source"
+}
+MetricDefinitions {
+  MetricDefinitions {
+    Name: "derived__avg_thread_executed"
+    Expression: "thread_inst_executed_true / inst_executed"
+  }
+  MetricDefinitions {
+    Name: "derived__memory_l2_sectors_global_excessive"
+    Expression: "memory_l2_sectors_global - memory_l2_sectors_global_ideal"
+  }
+  MetricDefinitions {
+    Name: "derived__memory_l1_sectors_shared_excessive"
+    Expression: "memory_l1_sectors_shared - memory_l1_sectors_shared_ideal"
+  }
+  MetricDefinitions {
+    Name: "derived__smsp__inst_executed_op_branch_pct"
+    Expression: "smsp__inst_executed_op_branch.sum / smsp__inst_executed.sum"
+  }
+}
+Header{
+  Metrics {
+    Label: "Branch Instructions"
+    Name: "smsp__inst_executed_op_branch.sum"
+  }
+  Metrics {
+    Label: "Branch Efficiency"
+    Name: "smsp__sass_average_branch_targets_threads_uniform.pct"
+  }
+  Metrics {
+    Label: "Branch Instructions Ratio"
+    Name: "derived__smsp__inst_executed_op_branch_pct"
+  }
+  Metrics {
+    Label: "Avg. Divergent Branches"
+    Name: "smsp__sass_branch_targets_threads_divergent.avg"
+  }
+}
+Body {
+  DisplayName: "Sampling Data (All)"
+  Items {
+    SourceMetricTable {
+      Label: "Sampling Data (All)"
+      Metrics {
+        Name: "group:smsp__pcsamp_warp_stall_reasons"
+      }
+    }
+  }
+}
+Body {
+  DisplayName: "Sampling Data (Not Issued)"
+  Items {
+    SourceMetricTable {
+      Label: "Sampling Data (Not Issued)"
+      Metrics {
+        Name: "group:smsp__pcsamp_warp_stall_reasons_not_issued"
+      }
+    }
+  }
+}
+Body {
+  DisplayName: "Most Instructions Executed"
+  Items {
+    SourceMetricTable {
+      Label: "Most Instructions Executed"
+      Metrics {
+        Name: "inst_executed"
+      }
+    }
+  }
+}
+Metrics {
+  Metrics {
+    Name: "smsp__inst_executed.sum"
+  }
+  Metrics {
+    Label: "Sampling Data (All)"
+    Name: "group:smsp__pcsamp_warp_stall_reasons"
+  }
+  Metrics {
+    Label: "Sampling Data (Not Issued)"
+    Name: "group:smsp__pcsamp_warp_stall_reasons_not_issued"
+  }
+  Metrics {
+    Label: "Instructions Executed"
+    Name: "inst_executed"
+  }
+  Metrics {
+    Label: "Predicated-On Thread Instructions Executed"
+    Name: "thread_inst_executed_true"
+  }
+  Metrics {
+    Label: "Avg Thread Executed"
+    Name: "derived__avg_thread_executed"
+  }
+  Metrics {
+    Label: "Divergent Branches"
+    Name: "smsp__branch_targets_threads_divergent"
+  }
+  Metrics {
+    Label: "Address Space"
+    Name: "memory_type"
+  }
+  Metrics {
+    Label: "Access Operation"
+    Name: "memory_access_type"
+  }
+  Metrics {
+    Label: "Access Size"
+    Name: "memory_access_size_type"
+  }
+  Metrics {
+    Label: "L1 Sectors Global"
+    Name: "memory_l1_sectors_global"
+  }
+
+  Metrics {
+    Label: "L1 Sectors Shared Excessive"
+    Name: "derived__memory_l1_sectors_shared_excessive"
+  }
+  Metrics {
+    Label: "L1 Sectors Shared"
+    Name: "memory_l1_sectors_shared"
+  }
+  Metrics {
+    Label: "L1 Sectors Shared Ideal"
+    Name: "memory_l1_sectors_shared_ideal"
+  }
+
+  Metrics {
+    Label: "L2 Sectors Global Excessive"
+    Name: "derived__memory_l2_sectors_global_excessive"
+  }
+  Metrics {
+    Label: "L2 Sectors Global"
+    Name: "memory_l2_sectors_global"
+  }
+  Metrics {
+    Label: "L2 Sectors Global Ideal"
+    Name: "memory_l2_sectors_global_ideal"
+  }
+
+  Metrics {
+    Label: "L2 Sectors Local"
+    Name: "memory_l2_sectors_local"
+  }
+
+  Metrics {
+    Label: "stall_barrier"
+    Name: "smsp__pcsamp_warps_issue_stalled_barrier"
+  }
+  Metrics {
+    Label: "stall_dispatch"
+    Name: "smsp__pcsamp_warps_issue_stalled_dispatch_stall"
+  }
+  Metrics {
+    Label: "stall_drain"
+    Name: "smsp__pcsamp_warps_issue_stalled_drain"
+  }
+  Metrics {
+    Label: "stall_imc"
+    Name: "smsp__pcsamp_warps_issue_stalled_imc_miss"
+  }
+  Metrics {
+    Label: "stall_lg"
+    Name: "smsp__pcsamp_warps_issue_stalled_lg_throttle"
+  }
+  Metrics {
+    Label: "stall_long_sb"
+    Name: "smsp__pcsamp_warps_issue_stalled_long_scoreboard"
+  }
+  Metrics {
+    Label: "stall_math"
+    Name: "smsp__pcsamp_warps_issue_stalled_math_pipe_throttle"
+  }
+  Metrics {
+    Label: "stall_membar"
+    Name: "smsp__pcsamp_warps_issue_stalled_membar"
+  }
+  Metrics {
+    Label: "stall_mio"
+    Name: "smsp__pcsamp_warps_issue_stalled_mio_throttle"
+  }
+  Metrics {
+    Label: "stall_misc"
+    Name: "smsp__pcsamp_warps_issue_stalled_misc"
+  }
+  Metrics {
+    Label: "stall_no_inst"
+    Name: "smsp__pcsamp_warps_issue_stalled_no_instructions"
+  }
+  Metrics {
+    Label: "stall_not_selected"
+    Name: "smsp__pcsamp_warps_issue_stalled_not_selected"
+  }
+  Metrics {
+    Label: "stall_selected"
+    Name: "smsp__pcsamp_warps_issue_stalled_selected"
+  }
+  Metrics {
+    Label: "stall_short_sb"
+    Name: "smsp__pcsamp_warps_issue_stalled_short_scoreboard"
+  }
+  Metrics {
+    Label: "stall_sleep"
+    Name: "smsp__pcsamp_warps_issue_stalled_sleeping"
+  }
+  Metrics {
+    Label: "stall_tex"
+    Name: "smsp__pcsamp_warps_issue_stalled_tex_throttle"
+  }
+  Metrics {
+    Label: "stall_wait"
+    Name: "smsp__pcsamp_warps_issue_stalled_wait"
+  }
+
+
+  Metrics {
+    Label: "stall_barrier (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_barrier_not_issued"
+  }
+  Metrics {
+    Label: "stall_dispatch (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_dispatch_stall_not_issued"
+  }
+  Metrics {
+    Label: "stall_drain (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_drain_not_issued"
+  }
+  Metrics {
+    Label: "stall_imc (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_imc_miss_not_issued"
+  }
+  Metrics {
+    Label: "stall_lg (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_lg_throttle_not_issued"
+  }
+  Metrics {
+    Label: "stall_long_sb (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_long_scoreboard_not_issued"
+  }
+  Metrics {
+    Label: "stall_math (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_math_pipe_throttle_not_issued"
+  }
+  Metrics {
+    Label: "stall_membar (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_membar_not_issued"
+  }
+  Metrics {
+    Label: "stall_mio (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_mio_throttle_not_issued"
+  }
+  Metrics {
+    Label: "stall_misc (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_misc_not_issued"
+  }
+  Metrics {
+    Label: "stall_no_inst (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_no_instructions_not_issued"
+  }
+  Metrics {
+    Label: "stall_not_selected (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_not_selected_not_issued"
+  }
+  Metrics {
+    Label: "stall_selected (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_selected_not_issued"
+  }
+  Metrics {
+    Label: "stall_short_sb (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_short_scoreboard_not_issued"
+  }
+  Metrics {
+    Label: "stall_sleeping (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_sleeping_not_issued"
+  }
+  Metrics {
+    Label: "stall_tex (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_tex_throttle_not_issued"
+  }
+  Metrics {
+    Label: "stall_wait (Not Issued)"
+    Name: "smsp__pcsamp_warps_issue_stalled_wait_not_issued"
+  }
+}
