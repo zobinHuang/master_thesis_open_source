@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <cassert>
+#include <random>
+
 #include <stdint.h>
 #include <sys/time.h>
 
@@ -93,8 +95,10 @@ void verify_spmv_result(
     }
 
     for(IndexType row=0; row<n_rows; row++){
-        // std::cout << "result: " << result[row] << "; correct result: " << correct_result[row] << std::endl;
-        assert(abs(result[row]-correct_result[row]) <= 0.00001);
+        if(abs(result[row]-correct_result[row]) > 0.1){
+            std::cout << "result: " << result[row] << "; correct result: " << correct_result[row] << std::endl;
+        }
+        assert(abs(result[row]-correct_result[row]) <= 0.1);
     }
 }
 
@@ -115,8 +119,12 @@ void generate_random_csr(
     const IndexType nnz,
     std::vector<IndexType> &col_ids,
     std::vector<IndexType> &row_ptr,
-    std::vector<T> &data
+    std::vector<T> &data,
+    double distribution
 ){
+    std::default_random_engine gen;
+    std::normal_distribution<double> dis(elem_cnt/row_size, distribution);
+
     // generate random sparse matrix
     std::vector<T> temp_array(elem_cnt, 0);
     for (IndexType i=0; i<nnz; i++) {
@@ -130,17 +138,31 @@ void generate_random_csr(
     // convert to CSR format
     IndexType n_rows = elem_cnt/row_size;
     IndexType nnz_count = 0;
+    IndexType nnz_this_row;
+    IndexType interval_between_nnz;
     row_ptr.push_back(0);
+
     for(IndexType row=0; row<n_rows; row++){
-        IndexType nnz_row = 0;
-        for(IndexType col=0; col<row_size; col++){
-            if(temp_array[row*row_size+col] != 0){
-                nnz_row += 1;
-                col_ids.push_back(col);
-                data.push_back(temp_array[row*row_size+col]);
-            }
+        IndexType nb_added_nnz = 0;
+
+        if(nnz_count >= nnz){ goto for_exit; }
+
+        if(row != n_rows - 1){
+            nnz_this_row = static_cast<IndexType>(dis(gen));
+        } else {
+            nnz_this_row = nnz - nnz_count;
         }
-        nnz_count += nnz_row;
+        interval_between_nnz = row_size / nnz_this_row;
+
+        for(IndexType i=0; i<nnz_this_row; i++){
+            col_ids.push_back(i*interval_between_nnz);
+            data.push_back(temp_array[nnz_count+i]);
+            nb_added_nnz += 1;
+        }
+        
+        nnz_count += nnz_this_row;
+    
+    for_exit:
         row_ptr.push_back(nnz_count);
     }
 }

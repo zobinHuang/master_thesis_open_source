@@ -1,25 +1,69 @@
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <nvToolsExt.h>
 
 #include <stdint.h>
 #include <cuda_runtime_api.h>
 
+#include <unistd.h>
+
 #include "profile.cuh"
 #include "utils.cuh"
 #include "kernel.cuh"
 
-constexpr uint64_t kRowSize = 1 << 8;
-constexpr uint64_t kNumRow  = 1 << 8;
-constexpr uint64_t kElemCnt = kRowSize * kNumRow;
-constexpr double kNnzRatio  = 0.5f;
-constexpr uint64_t kNnzCnt  = (uint64_t)((double)kElemCnt*kNnzRatio);
+uint64_t kRowSize           = 1 << 10;
+uint64_t kNumRow            = 1 << 16;
+uint64_t kElemCnt           = kRowSize * kNumRow;
+double kNnzRatio            = 0.5f;
+double kNnzDistribution     = static_cast<double>(1 << 5);
+uint64_t kNnzCnt            = (uint64_t)((double)kElemCnt*kNnzRatio);
 using kDataType             = float;
-using kIndexType            = uint32_t;
+using kIndexType            = uint64_t;
 
 constexpr int kBlockSize    = 1 << 8;
 
-int main(){
+template<typename T>
+T __string_to_num(std::string a){
+    std::istringstream iss(a);
+    T num;
+    iss >> num;
+    return num;
+}
+
+void __parse_cli(int argc, char** argv){
+    char ch;
+    const char* optstr = "m:n:r:d:";
+    while( (ch = getopt(argc, argv, optstr)) != -1 ){
+        switch(ch)
+        {
+        case 'm':
+            kRowSize = atoll(optarg);
+            break;
+        case 'n':
+            kNumRow = atoll(optarg);
+            break;
+        case 'r':
+            kNnzRatio = __string_to_num<double>(optarg);
+            break;
+        case 'd':
+            kNnzDistribution = __string_to_num<double>(optarg);
+            break;
+        default:
+            assert(0);
+        }
+    }
+}
+
+int main(int argc, char** argv){
+    __parse_cli(argc, argv);
+    std::cout 
+        << "m=" << std::to_string(kRowSize) 
+        << ", n=" << std::to_string(kNumRow) 
+        << ", ratio=" << std::to_string(kNnzRatio)  
+        << ", distribute=" << std::to_string(kNnzDistribution)
+        << std::endl;
+
     PROFILE(nvtxRangePush("allocate host memory for vectors");)
     std::vector<kIndexType> col_ids;      // CSR col indices
     std::vector<kIndexType> row_ptr;      // CSR row pointers
@@ -32,7 +76,7 @@ int main(){
 
     // initialize random value
     PROFILE(nvtxRangePush("initialize matrix and vector with random numbers");)
-    generate_random_csr<kDataType, kIndexType>(kRowSize, kElemCnt, kNnzCnt, col_ids, row_ptr, data);
+    generate_random_csr<kDataType, kIndexType>(kRowSize, kElemCnt, kNnzCnt, col_ids, row_ptr, data, kNnzDistribution);
     for (int i=0; i<kRowSize; i++){
         x.push_back(generate_random_value<kDataType>());
     }
@@ -98,4 +142,6 @@ int main(){
     PROFILE(nvtxRangePop();)
 
     std::cout << "Get correct SpMV result!" << std::endl;
+
+    return 0;
 }
