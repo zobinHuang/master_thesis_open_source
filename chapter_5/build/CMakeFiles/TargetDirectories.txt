@@ -1,0 +1,3 @@
+/disk3/hzb/projects/spmv_op/chapter_4/CUDAmop/build/CMakeFiles/topk.dir
+/disk3/hzb/projects/spmv_op/chapter_4/CUDAmop/build/CMakeFiles/edit_cache.dir
+/disk3/hzb/projects/spmv_op/chapter_4/CUDAmop/build/CMakeFiles/rebuild_cache.dir
